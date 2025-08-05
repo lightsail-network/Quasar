@@ -570,7 +570,7 @@
             <div class="tabs-container">
                 <div class="tabs">
                     <button class="tab active" onclick="switchTab('stellar-rpc')">Stellar RPC</button>
-                    <button class="tab" onclick="switchTab('stellar-archive')">Stellar Archive RPC</button>
+                    <button class="tab" onclick="switchTab('stellar-archive-rpc')">Stellar Archive RPC</button>
                     <button class="tab" onclick="switchTab('galexie-lake')">Galexie Data Lake</button>
                 </div>
             </div>
@@ -607,7 +607,7 @@
                 </div>
             </div>
 
-            <div id="stellar-archive" class="tab-content">
+            <div id="stellar-archive-rpc" class="tab-content">
                 <div class="service-card">
                     <div class="service-header">
                         <h3 class="service-title">Stellar Archive RPC</h3>
@@ -693,7 +693,41 @@
             
             // Add active class to clicked tab
             event.target.classList.add('active');
+            
+            // Update URL hash
+            window.history.pushState(null, null, `#${tabId}`);
         }
+        
+        // Handle page load and hash changes
+        function initializeTabs() {
+            const hash = window.location.hash.substring(1);
+            const validTabs = ['stellar-rpc', 'stellar-archive-rpc', 'galexie-lake'];
+            
+            if (hash && validTabs.includes(hash)) {
+                // Hide all tab contents
+                const contents = document.querySelectorAll('.tab-content');
+                contents.forEach(content => content.classList.remove('active'));
+                
+                // Remove active class from all tabs
+                const tabs = document.querySelectorAll('.tab');
+                tabs.forEach(tab => tab.classList.remove('active'));
+                
+                // Show selected tab content
+                document.getElementById(hash).classList.add('active');
+                
+                // Add active class to corresponding tab
+                const targetTab = document.querySelector(`[onclick="switchTab('${hash}')"]`);
+                if (targetTab) {
+                    targetTab.classList.add('active');
+                }
+            }
+        }
+        
+        // Initialize tabs on page load
+        document.addEventListener('DOMContentLoaded', initializeTabs);
+        
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', initializeTabs);
 
         function copyEndpoint(button, url) {
             navigator.clipboard.writeText(url).then(() => {
